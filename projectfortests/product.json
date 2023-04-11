@@ -1,0 +1,25 @@
+[{
+  "productCode": 1,
+  "productName": "proizvod1",
+  "quantity": 50,
+  "description": "proizvod1"
+}, 
+{
+    "productCode": 2,
+    "productName": "proizvod2",
+    "quantity": 30,
+    "description": "proizvod2"
+},
+{
+    "productCode": 3,
+    "productName": "proizvod3",
+    "quantity": 10,
+    "description": "proizvod3"
+},
+{
+    "productCode": 4,
+    "productName": "proizvod4",
+    "quantity": 40,
+    "description": "proizvod4"
+}
+]

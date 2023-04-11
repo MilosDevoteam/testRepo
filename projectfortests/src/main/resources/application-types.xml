@@ -1,0 +1,21 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<types:mule xmlns:types="http://www.mulesoft.org/schema/mule/types">
+  <types:catalog>
+    <types:type name="product" format="json">
+      <types:shape format="weave" example="examples/product.json"><![CDATA[%dw 2.0
+
+type product = Array<{|  productCode: Number {"typeId": "int"},   productName: String,   quantity: Number {"typeId": "int"},   description: String|}> {"example": "[{\\\"productCode\\\":1,\\\"productName\\\":\\\"proizvod1\\\",\\\"quantity\\\":50,\\\"description\\\":\\\"proizvod1\\\"},{\\\"productCode\\\":2,\\\"productName\\\":\\\"proizvod2\\\",\\\"quantity\\\":30,\\\"description\\\":\\\"proizvod2\\\"},{\\\"productCode\\\":3,\\\"productName\\\":\\\"proizvod3\\\",\\\"quantity\\\":10,\\\"description\\\":\\\"proizvod3\\\"},{\\\"productCode\\\":4,\\\"productName\\\":\\\"proizvod4\\\",\\\"quantity\\\":40,\\\"description\\\":\\\"proizvod4\\\"}]"}
+
+]]></types:shape>
+    </types:type>
+  </types:catalog>
+  <types:enrichment select="#afc05190-b68e-4fb7-ba8a-d8d3276830ab">
+    <types:processor-declaration>
+      <types:output-event>
+        <types:message>
+          <types:payload type="product"/>
+        </types:message>
+      </types:output-event>
+    </types:processor-declaration>
+  </types:enrichment>
+</types:mule>

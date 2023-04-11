@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:file="http://www.mulesoft.org/schema/mule/file" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns:db="http://www.mulesoft.org/schema/mule/db"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/file http://www.mulesoft.org/schema/mule/file/current/mule-file.xsd">
+<!-- [STUDIO:"readFromFile"]	<flow name="readFromFile" doc:id="b4b138b2-7f03-4a66-ada3-5743d2997fb0" >
+		<http:listener doc:name="Listener" doc:id="3cc52dfb-7f70-4561-ba50-2ec53c785f3c" config-ref="HTTP_Listener_config" path="/warehouse" allowedMethods="GET"/>
+		<file:read doc:name="Read" doc:id="7d8178a2-e1cf-44fa-96eb-e3f96ea84c17" config-ref="File_Config" path="C:\Users\mprica\Desktop\zadaci\projectfortests\product.json" target="productCode"/>
+		<ee:transform doc:name="Transform Message" doc:id="afc05190-b68e-4fb7-ba8a-d8d3276830ab" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+&#45;&#45;-
+payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<set-variable value="#[payload.productCode]" doc:name="Set Variable" doc:id="8e31d2bc-6889-497c-87e5-81e472d888a1" variableName="productCodeFile"/>
+		<logger level="INFO" doc:name="Logger" doc:id="7ad7e24c-8de6-41e4-9ea5-259a4b7b866c" message="#[vars.productCodeFile]"/>
+	</flow> [STUDIO] -->
+	<flow name="deletingProducts" doc:id="6b90b663-e615-4406-952d-3c1cc0792e76" >
+		<http:listener doc:name="Listener" doc:id="8151c4ff-3ab7-4925-9bdf-b2339c8ff1e8" config-ref="HTTP_Listener_config" path="/product"/>
+		<db:select doc:name="Select" doc:id="c986b06e-e2c6-4b92-ab3a-09c985604c6f" config-ref="Database_Config">
+			<db:sql><![CDATA[SELECT * FROM product ]]></db:sql>
+		</db:select>
+		<set-payload value="#[payload]" doc:name="Set Payload" doc:id="5b93f1bd-86e8-4fa8-a26a-5d76276dea25" />
+		<set-variable value="#[payload.productCode]" doc:name="productCodeDB" doc:id="e55e03b7-6f3a-48f0-9165-7bd5b63e29bb" variableName="productCodeDB"/>
+		<file:read doc:name="Read" doc:id="48f58cbc-9eb5-4962-bd08-d8199d90d56d" config-ref="File_Config" path="C:\Users\mprica\Desktop\zadaci\projectfortests\product.json" target="productCode"/>
+		<set-payload value="#[payload]" doc:name="warehouse" doc:id="ea6e0fe1-ebcb-42ad-80d5-21df818822eb" />
+		<set-variable doc:name="warehouseCode" doc:id="996e403a-78c8-40d7-afcb-00761c73826d" variableName="warehouseCode" value="#[payload.productCode]"/>
+		<foreach doc:name="For Each" doc:id="99e73560-f1b4-41d1-8657-c2f8fe3f9532" >
+			<choice doc:name="Choice" doc:id="ede26621-964b-4e92-bb56-b1696c753cc2" >
+				<when expression="#[[vars.warehouseCode] contains vars.productCodeDB]">
+<db:insert doc:name="Insert" doc:id="5f7bd808-a406-4b2a-9945-b081acdff145" config-ref="Database_Config">
+						<db:sql><![CDATA[INSERT INTO deleting(productCode) 
+VALUES(:productCode)]]></db:sql>
+						<db:input-parameters><![CDATA[#[{
+	productCode: payload.productCode
+}]]]></db:input-parameters>
+					</db:insert>
+					<!-- [STUDIO:"Select"]					<db:select doc:name="Select" doc:id="bebab109-76b8-47a1-be3d-c16178e6f84b" config-ref="Database_Config">
+						<db:sql ><![CDATA[SELECT * FROM deleting]]></db:sql>
+					</db:select> [STUDIO] -->
+<!-- [STUDIO:"Transform Message"]					<ee:transform doc:name="Transform Message" doc:id="abe851aa-cf03-4664-b8a8-6565427a3348" >
+						<ee:message >
+							<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+&#45;&#45;-
+payload]]></ee:set-payload>
+						</ee:message>
+					</ee:transform> [STUDIO] -->
+				</when>
+				<otherwise>
+					<ee:transform doc:name="Transform Message" doc:id="fe1dfdf3-c5c9-48ff-9ac8-1f22ab2a5efd">
+						<ee:message>
+							<ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+	message: "OK"
+}]]></ee:set-payload>
+						</ee:message>
+					</ee:transform>
+				</otherwise>
+			</choice>
+		</foreach>
+		<ee:transform doc:name="Transform Message" doc:id="a92c6a07-319a-4ade-abf0-96d9978d9f00" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	message: "OK"
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+</mule>
