@@ -78,4 +78,15 @@ output application/json
 			</ee:message>
 		</ee:transform>
 	</flow>
+	<flow name="testFlow" doc:id="52d5462e-fc4a-4158-ba93-ffede6a31dfc" >
+		<http:listener doc:name="Listener" doc:id="e26d89eb-0cb3-4187-97b9-6fae5eae1bdb" config-ref="HTTP_Listener_config" path="/testFlow"/>
+		<ee:transform doc:name="Transform Message" doc:id="ce6ecdd1-5da9-4d7f-a9c8-4bb2698a7e08" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
 </mule>
